@@ -1,0 +1,59 @@
+
+(! sum-code
+'(
+;data segment
+(align 4)
+ele1
+(dword 7)
+(dword ele2)
+ele2
+(dword 12)
+(dword ele3)
+ele3
+(dword 17)
+(dword 0)
+
+
+;code segment
+summer
+(pushl %ebp) ;push old base pointer
+(rrmovl %esp %ebp) ;set up current frames base pointer
+(mrmovl 8(%ebp) %edx) ;have the address of ele1
+(mrmovl 0(%edx) %eax) ;get value of the first node
+(mrmovl 4(%edx) %edx) ;get the value of the next node
+(andl %edx %edx)      ;check to see if address of the next one is null
+(je done)	      ;if it is go to done
+
+loop
+(mrmovl 0(%edx) %ecx) ;get the value and add to temp
+(addl %ecx %eax)      ;add temp to result	
+(mrmovl 4(%edx) %edx) ;get address of the next node
+(andl %edx %edx)
+(jne loop)	      ;if address is okay, jump to loop
+
+
+
+done	
+(rrmovl %ebp %esp) ;move the base pointer into the stack pointer
+(popl %ebp) ;return the callers frame
+(ret)
+
+
+main
+(irmovl stack_top %esp)
+(irmovl stack_top %ebp)
+
+(irmovl ele1 %edx) ;get the address for ele1
+(pushl %edx) ;edx holds the address to the first node
+(call summer)
+
+
+//code
+
+
+(ret)
+end-of-code
+
+(pos 4096)
+stack_top
+))
